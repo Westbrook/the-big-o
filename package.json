@@ -44,6 +44,10 @@
   "devDependencies": {
     "@open-wc/eslint-config": "^7.0.0",
     "@open-wc/testing": "^3.1.6",
+    "@spectrum-web-components/menu": "0.14.4",
+    "@spectrum-web-components/popover": "0.11.16",
+    "@spectrum-web-components/theme": "0.12.0",
+    "@spectrum-web-components/tooltip": "0.10.16",
     "@typescript-eslint/eslint-plugin": "^5.30.7",
     "@typescript-eslint/parser": "^5.30.7",
     "@web/dev-server": "^0.1.32",
