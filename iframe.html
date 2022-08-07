@@ -81,7 +81,16 @@
         console.warn('unable to connect to top frame for connecting dev tools');
       }
     </script>
-    
+    <script>
+    // Needed while tachometer does not surface support for export conditions.
+    // @floating-ui/core leverages `process.env.NODE_ENV` in their 'default' export.
+    window.process = window.process || {
+        env: {
+            NODE_ENV: 'production',
+        },
+    };
+</script>
+
   
 <link rel="preload" href="./53740e97.js" as="script" />
 </head>
