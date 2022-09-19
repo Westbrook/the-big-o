@@ -13,7 +13,14 @@ export default css`
       top: 0;
       left: 0;
       position: fixed;
-      overflow: hidden;
+      overflow: visible;
+    }
+    :host(:not([has-element-children])) {
+      opacity: 0;
+      transition: opacity 0.5s 0s;
+    }
+    :host([popup-open]:not([has-element-children])) {
+      opacity: 1;
     }
     /* .container {
       transform: translateY(0);
@@ -34,11 +41,14 @@ export default css`
     :host([actual-placement="right"]) .container {
       padding-right: 1em;
     } */
-    @supports selector(:top-layer) {
-      :host(:top-layer) {
+    @supports selector(:open) {
+      :host(:open) {
         display: flex;
         /* opacity: 1; */
         pointer-events: auto;
+      }
+      :host(:open:not([has-element-children])) {
+        opacity: 1;
       }
       /* :host([actual-placement="top"]:top-layer) .container {
         transform: translateY(-1em);
@@ -53,7 +63,7 @@ export default css`
         transform: translateX(1em);
       } */
     }
-    @supports not selector(:top-layer) {
+    @supports not selector(:open) {
       :host([popup-open]) {
         display: flex;
         opacity: 1;
@@ -74,5 +84,23 @@ export default css`
     }
     ::slotted(*) {
       position: relative;
+    }
+
+    @supports (anchor-name: --test) {
+        :host {
+            position: absolute;
+            position-fallback: --top-to-bottom;
+        }
+    }
+
+    @position-fallback --top-to-bottom {
+        @try {
+            bottom: anchor(--anchor top);
+            left: anchor(--anchor right);
+        }
+        @try {
+            top: anchor(--anchor bottom);
+            left: anchor(--anchor right);
+        }
     }
 `;

@@ -1,11 +1,12 @@
-import { html, css, LitElement } from 'lit';
+import { html, css, PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import { AnchoredPopupMixin } from '../../mixins/anchoredPopup.js';
 import { Placement } from '../../utils/positionAnchoredElement.js';
 import positionedStyles from '../../utils/directional-placement.css.js';
 import { supportsTopLayer } from '../../utils/index.js';
+import { BigO } from '../overlay/BigO.js';
 
-export class ClickO extends AnchoredPopupMixin(LitElement) {
+export class ClickO extends AnchoredPopupMixin(BigO) {
   static styles = [
     positionedStyles,
     css`
@@ -24,18 +25,17 @@ export class ClickO extends AnchoredPopupMixin(LitElement) {
     this.anchorElement.addEventListener('click', this.handleAnchorInteraction);
   }
 
-  removeEventListenersToAnchor() {
+  removeEventListenersFromAnchor() {
     this.anchorElement.removeEventListener('click', this.handleAnchorInteraction);
   }
 
   async setupOverlay() {
+    console.log('s');
     if (!supportsTopLayer) {
       document.documentElement.addEventListener('click', this.handleDocumentInteraction);
     }
-    if (this.hasAttribute('focus')) {
-      const focusTarget = (this.querySelector('[tabindex]:not([tabindex="-1"])') as HTMLElement);
-      focusTarget.focus();
-    }
+    const focusTarget = (this.querySelector('[tabindex]:not([tabindex="-1"])') as HTMLElement);
+    focusTarget?.focus();
   }
 
   async breakdownOverlay() {
@@ -53,31 +53,44 @@ export class ClickO extends AnchoredPopupMixin(LitElement) {
   }
 
   handleInteraction = (event: Event) => {
+    console.log('a', event.defaultPrevented);
     if (event.defaultPrevented) return;
-    if (this.popupOpen) {
-      this.handleHide(event);
-      this.breakdownOverlay();
-    } else {
-      this.handleShow(event);
-      this.setupOverlay();
-    }
+    this.open = !this.open;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   containClick(event: Event): void {
     event.stopPropagation();
   }
 
+  willUpdate(changes: PropertyValues<this>) {
+    if (changes.has('open')) {
+      if (this.open) {
+        this.showOverlay();
+        this.setupOverlay();
+      } else if (typeof changes.get('open') !== 'undefined') {
+        this.hideOverlay();
+        this.breakdownOverlay();
+      }
+    }
+  }
+
   render() {
+    /* eslint-disable lit-a11y/click-events-have-key-events */
     return html`
-      <div class="container" @click=${this.containClick}>
+      <div
+        class="container"
+        @click=${this.containClick}
+      >
         <slot></slot>
       </div>
     `;
+    /* eslint-enable lit-a11y/click-events-have-key-events */
   }
 
-  firstUpdated() {
+  firstUpdated(changes: PropertyValues<this>) {
+    super.firstUpdated(changes);
     this.setAttribute('popup', 'auto');
-    this.resolveAnchor();
   }
 
   public disconnectedCallback() {

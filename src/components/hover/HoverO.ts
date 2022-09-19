@@ -1,14 +1,15 @@
-import { html, css, LitElement } from 'lit';
+import { html, css, PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import { AnchoredPopupMixin } from '../../mixins/anchoredPopup.js';
 import { Placement } from '../../utils/positionAnchoredElement.js';
 import positionedStyles from '../../utils/directional-placement.css.js';
+import { BigO } from '../overlay/BigO.js';
 
 // Events to turn on/off the tooltip
 const enterEvents = ['pointerenter', 'focus'];
 const leaveEvents = ['pointerleave', 'blur', 'keydown', 'click'];
 
-export class HoverO extends AnchoredPopupMixin(LitElement) {
+export class HoverO extends AnchoredPopupMixin(BigO) {
   static styles = [
     positionedStyles,
     css`
@@ -25,19 +26,19 @@ export class HoverO extends AnchoredPopupMixin(LitElement) {
 
   addEventListenersToAnchor() {
     enterEvents.forEach((event) => {
-      this.anchorElement.addEventListener(event, this.handleShow);
+      this.anchorElement.addEventListener(event, this.showOverlay);
     });
     leaveEvents.forEach((event) => {
-      this.anchorElement.addEventListener(event, this.handleHide);
+      this.anchorElement.addEventListener(event, this.hideOverlay);
     });
   }
 
   removeEventListenersToAnchor() {
     enterEvents.forEach((event) => {
-      this.anchorElement.removeEventListener(event, this.handleShow);
+      this.anchorElement.removeEventListener(event, this.showOverlay);
     });
     leaveEvents.forEach((event) => {
-      this.anchorElement.removeEventListener(event, this.handleHide);
+      this.anchorElement.removeEventListener(event, this.hideOverlay);
     });
   }
 
@@ -49,8 +50,8 @@ export class HoverO extends AnchoredPopupMixin(LitElement) {
     `;
   }
 
-  firstUpdated() {
+  firstUpdated(changes: PropertyValues<this>) {
+    super.firstUpdated(changes);
     this.setAttribute('popup', 'hint');
-    this.resolveAnchor();
   }
 }

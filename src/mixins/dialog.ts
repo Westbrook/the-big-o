@@ -1,27 +1,20 @@
-type Constructor<T = Record<string, unknown>> = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    new (...args: any[]): T;
-    prototype: T;
-};
+import { ReactiveElement } from 'lit';
+import type { Constructor, Overlay } from './mixin-types.js';
 
-export function DialogMixin<T extends Constructor<HTMLElement>>(constructor: T) {
-    class DialogElement extends constructor {
-      get isOpen() {
-        return this.dialog.open;
-      }
-  
+export function DialogMixin<T extends Constructor<ReactiveElement & Overlay>>(constructor: T): T {
+    class DialogElement extends constructor {  
       get dialog() {
-        return this.shadowRoot!.querySelector('dialog') as HTMLDialogElement;
+        return this.shadowRoot.querySelector('dialog') as HTMLDialogElement;
       }
   
-      handleShow = (event?: Event) => {
-        if (this.isOpen) {
+      showOverlay = (_event?: Event) => {
+        if (this.dialog.open) {
           return;
         }
         this.dialog.showModal();
       }
 
-      handleHide = () => {
+      hideOverlay = () => {
         const cleanUp = () => {
             this.handleClose();
             this.dialog.classList.remove('closing');
@@ -31,7 +24,7 @@ export function DialogMixin<T extends Constructor<HTMLElement>>(constructor: T) 
       }
   
       handleClose = () => {
-        if (!this.isOpen) {
+        if (!this.dialog.open) {
           return;
         }
         this.dialog.close();

@@ -1,13 +1,22 @@
-import { supportsTopLayer } from '../utils/index.js';
+import { PropertyValues, ReactiveElement } from 'lit';
+import { property } from 'lit/decorators.js';
+import { firstFocusableSelector, supportsTopLayer } from '../utils/index.js';
+import type { Constructor, Overlay } from './mixin-types.js';
 
-type Constructor<T = Record<string, unknown>> = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    new (...args: any[]): T;
-    prototype: T;
-};
-
-export function PopupMixin<T extends Constructor<HTMLElement>>(constructor: T) {
+export interface PopupInterface {
+    hidePopUp(): void;
+    showPopUp(): void;
+    popupOpen: boolean;
+    receivesFocus: 'auto' | undefined;
+}
+  
+export function PopupMixin<T extends Constructor<ReactiveElement & Overlay>>(
+    constructor: T
+): T & Constructor<PopupInterface> {
     class PopupElement extends constructor {
+        @property({ attribute: 'receives-focus' })
+        receivesFocus: 'auto' | undefined;
+
         public get popupOpen(): boolean {
             return this._popupOpen;
         }
@@ -26,13 +35,22 @@ export function PopupMixin<T extends Constructor<HTMLElement>>(constructor: T) {
             if (!this.popupOpen) {
                 return;
             }
+            this.popupOpen = false;
             // @ts-ignore 
-            if (super.hidePopUp && this.matches(':top-layer')) {
+            if (super.hidePopUp && this.matches(':open')) {
                 // @ts-ignore 
                 super.hidePopUp();
+                this.open = false;
+            } else {
+                console.log('will hide');
+                this.dispatchEvent(new Event('hide', { bubbles: true, composed: true }));
             }
-            this.popupOpen = false;
-            this.shadowRoot?.querySelector('slot')?.assignedElements()?.forEach(element => element.toggleAttribute('open', false));
+            let hasElementChildren = false;
+            this.shadowRoot?.querySelector('slot')?.assignedElements()?.forEach(element => {
+                hasElementChildren = true;
+                element.toggleAttribute('open', false);
+            });
+            this.toggleAttribute('has-element-children', hasElementChildren);
         }
 
         positionPopUp() {}
@@ -41,23 +59,49 @@ export function PopupMixin<T extends Constructor<HTMLElement>>(constructor: T) {
             if (this.popupOpen) {
                 return;
             }
+            this.popupOpen = true;
             // @ts-ignore 
-            if (super.showPopUp && !this.matches(':top-layer')) {
+            if (super.showPopUp && !this.matches(':open')) {
                 // @ts-ignore 
                 super.showPopUp();
-                this.addEventListener('hide', this.hidePopUp, { once: true });
+                this.open = true;
+                console.log('listener');
+                this.addEventListener('hide', () => {
+                    this.open = false;
+                }, { once: true });
+            } else {
+                console.log('will show');
+                this.dispatchEvent(new Event('show', { bubbles: true, composed: true }));
             }
-            this.popupOpen = true;
-            this.shadowRoot?.querySelector('slot')?.assignedElements()?.forEach(element => element.toggleAttribute('open', true));
+            let hasElementChildren = false;
+            this.shadowRoot?.querySelector('slot')?.assignedElements()?.forEach(element => {
+                hasElementChildren = true;
+                element.toggleAttribute('open', true);
+            });
+            this.toggleAttribute('has-element-children', hasElementChildren);
         }
 
-        handleShow = (event?: Event) => {
+        showOverlay = (_event?: Event) => {
             this.showPopUp();
             this.positionPopUp();
         }
 
-        handleHide = (event?: Event) => {
+        hideOverlay = (_event?: Event) => {
+            console.log('ha', _event);
             this.hidePopUp();
+        }
+
+        updated(changes: PropertyValues<this>): void {
+            super.updated(changes);
+            if (changes.has('open') && this.open && this.receivesFocus === 'auto') {
+                requestAnimationFrame(() => {
+                    const firstFocusable = this.querySelector(firstFocusableSelector) as HTMLElement;
+                    if (firstFocusable) {
+                        console.log(firstFocusable)
+                        firstFocusable.focus();
+                    }
+                });
+            }
         }
     }
     return PopupElement;

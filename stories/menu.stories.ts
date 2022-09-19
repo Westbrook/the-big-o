@@ -28,6 +28,11 @@ export default {
             control: {
                 type: 'number'
             }
+        },
+        width: {
+            control: {
+                type: 'number'
+            }
         }
     },
     args: {
@@ -46,33 +51,52 @@ interface ArgTypes {
     placement: Placement;
     mainAxis: number;
     crossAxis: number;
+    width: number;
 }
 
 const Template: Story<ArgTypes> = ({
     placement,
     mainAxis,
     crossAxis,
+    width,
 }: ArgTypes) => html`
-    <button id="hover-o">This is a button</button>
-    <click-o
-        anchor="hover-o"
-        placement=${ifDefined(placement)}
-        main-axis=${mainAxis}
-        cross-axis=${crossAxis}
-        focus
-    >
-        <sp-popover
+    <div style="--swc-menu-width: ${width}px;">
+        <button id="hover-o">This is a button</button>
+        <click-o
+            anchor="hover-o"
             placement=${ifDefined(placement)}
-            style="margin-${placement || 'top'}: var(--spectrum-overlay-animation-distance);"
+            main-axis=${mainAxis}
+            cross-axis=${crossAxis}
+            focus
         >
-            <sp-menu>
-                <sp-menu-item>Option 1</sp-menu-item>
-                <sp-menu-item>Option 2</sp-menu-item>
-                <sp-menu-item>Option 3</sp-menu-item>
-                <sp-menu-item>Option 4</sp-menu-item>
-            </sp-menu>
-        </sp-popover>
-    </click-o>
+            <sp-popover
+                placement=${ifDefined(placement)}
+                style="margin-${placement || 'top'}: var(--spectrum-overlay-animation-distance);"
+            >
+                <sp-menu>
+                    <sp-menu-item>Option 1</sp-menu-item>
+                    <sp-menu-item>Option 2</sp-menu-item>
+                    <sp-menu-item>Option 3</sp-menu-item>
+                    <sp-menu-item>Option 4</sp-menu-item>
+                </sp-menu>
+            </sp-popover>
+        </click-o>
+    </div>
 `;
 
 export const Regular = (args: ArgTypes) => Template(args);
+
+export const layered = (args: ArgTypes) => Template(args);
+layered.decorators = [layeredDecorator];
+
+export const clipped = (args: ArgTypes) => Template(args);
+clipped.decorators = [clippedDecorator];
+
+export const positionRelative = (args: ArgTypes) => Template(args);
+positionRelative.decorators = [relativeDecorator];
+
+export const clipPathed = (args: ArgTypes) => Template(args);
+clipPathed.decorators = [clipPathedDecorator];
+
+export const transformed = (args: ArgTypes) => Template(args);
+transformed.decorators = [transformedDecorator];

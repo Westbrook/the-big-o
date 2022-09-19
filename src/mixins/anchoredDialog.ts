@@ -1,20 +1,16 @@
+import { ReactiveElement } from "lit";
 import { AnchoredMixin } from "./anchored.js";
 import { DialogMixin } from "./dialog.js";
+import type { Constructor, Overlay } from './mixin-types.js';
 
-type Constructor<T = Record<string, unknown>> = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    new (...args: any[]): T;
-    prototype: T;
-};
-
-export function AnchoredDialogMixin<T extends Constructor<HTMLElement>>(constructor: T) {
+export function AnchoredDialogMixin<T extends Constructor<ReactiveElement & Overlay>>(constructor: T): T {
     class AnchoredDialogElement extends AnchoredMixin(DialogMixin(constructor)) {
         addEventListenersToAnchor() {
-            this.anchorElement.addEventListener('click', this.handleShow);
+            this.anchorElement.addEventListener('click', this.showOverlay);
         }
     
         removeEventListenersFromAnchor() {
-            this.anchorElement.removeEventListener('click', this.handleShow);
+            this.anchorElement.removeEventListener('click', this.showOverlay);
         }
     }
     return AnchoredDialogElement;

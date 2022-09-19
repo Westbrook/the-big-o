@@ -1,9 +1,9 @@
-import { html, css, LitElement, PropertyValues } from 'lit';
-import { property } from 'lit/decorators.js';
+import { html, css, PropertyValues, TemplateResult } from 'lit';
 import { PopupMixin } from '../../mixins/popup.js';
 import positionedStyles from '../../utils/directional-placement.css.js';
+import { BigO } from '../overlay/BigO.js';
 
-export class ManualO extends PopupMixin(LitElement) {
+export class ManualO extends PopupMixin(BigO) {
   static styles = [
     positionedStyles,
     css`
@@ -20,36 +20,41 @@ export class ManualO extends PopupMixin(LitElement) {
     `
   ];
 
-  @property({ type: Boolean })
-  open = false;
-
-  handleClick(event?: Event): void {
-    event?.stopPropagation();
-    this.open = false;
-  }
-
   willUpdate(changes: PropertyValues<this>) {
     if (changes.has('open')) {
       if (this.open) {
-        this.handleShow();
+        this.showOverlay();
       } else {
-        this.handleHide();
+        this.hideOverlay();
       }
     }
   }
 
-  render() {
+  // eslint-disable-next-line class-methods-use-this
+  renderContainer(contents: TemplateResult) {
     return html`
       <div class="container">
-        <slot></slot>
-        <button @click=${this.handleClick}>X</button>
+        ${contents}
       </div>
+    `;
+  }
+
+  renderContent() {
+    return html`
+      ${this.renderSlot()}
+      <button @click=${this.hideOverlay}>X</button>
+    `
+  }
+
+  render() {
+    return html`
+      ${this.renderContainer(this.renderContent())}
     `;
   }
 
   firstUpdated() {
     if (this.hasAttribute('defaultopen')) {
-      this.handleShow();
+      this.showOverlay();
     }
   }
 

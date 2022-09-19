@@ -74,3 +74,18 @@ clipPathed.decorators = [clipPathedDecorator];
 
 export const transformed = (args: ArgTypes) => Template(args);
 transformed.decorators = [transformedDecorator];
+
+export const focusable: Story<ArgTypes> = ({
+    placement,
+}: ArgTypes) => html`
+    <style>
+        #content { opacity: 0; transition: opacity 0.4s; }
+        #content[open] { opacity: 1; }
+    </style>
+    <button id="click-o">This is a button</button>
+    <click-o
+        anchor="click-o"
+        placement=${ifDefined(placement)}
+        receives-focus="auto"
+    ><div id="content">This is an overlay with <input value="focusable" /> content.</div></click-o>
+`;

@@ -76,9 +76,6 @@
     ],
     "rules": {
       "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": [
-        "error"
-      ],
       "import/no-unresolved": "off",
       "import/extensions": [
         "error",
@@ -86,6 +83,12 @@
         {
           "ignorePackages": true
         }
+      ],
+      "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+              "argsIgnorePattern": "^_"
+          }
       ]
     }
   },

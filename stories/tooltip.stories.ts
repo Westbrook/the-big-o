@@ -66,3 +66,18 @@ const Template: Story<ArgTypes> = ({
 `;
 
 export const Regular = (args: ArgTypes) => Template(args);
+
+export const layered = (args: ArgTypes) => Template(args);
+layered.decorators = [layeredDecorator];
+
+export const clipped = (args: ArgTypes) => Template(args);
+clipped.decorators = [clippedDecorator];
+
+export const positionRelative = (args: ArgTypes) => Template(args);
+positionRelative.decorators = [relativeDecorator];
+
+export const clipPathed = (args: ArgTypes) => Template(args);
+clipPathed.decorators = [clipPathedDecorator];
+
+export const transformed = (args: ArgTypes) => Template(args);
+transformed.decorators = [transformedDecorator];
