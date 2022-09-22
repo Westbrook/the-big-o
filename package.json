@@ -38,6 +38,7 @@
     "storybook:build": "tsc && build-storybook"
   },
   "dependencies": {
+    "@floating-ui/core": "^1.0.0",
     "@floating-ui/dom": "^1.0.0",
     "lit": "2.2.8"
   },

@@ -93,7 +93,7 @@ export function PopupMixin<T extends Constructor<ReactiveElement & Overlay>>(
 
         updated(changes: PropertyValues<this>): void {
             super.updated(changes);
-            if (changes.has('open') && this.open && this.receivesFocus === 'auto') {
+            if (changes.has('open') && this.open && this.getAttribute('popup') !== 'manual') {
                 requestAnimationFrame(() => {
                     const firstFocusable = this.querySelector(firstFocusableSelector) as HTMLElement;
                     if (firstFocusable) {

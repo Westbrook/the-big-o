@@ -5,7 +5,7 @@ import { Placement } from '@floating-ui/dom';
 import { html, TemplateResult } from 'lit';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import '../src/components/hover/hover-o.js';
-import { centeredDecorator, clipPathedDecorator, clippedDecorator, layeredDecorator, relativeDecorator, transformedDecorator } from './index.js';
+import { centeredDecorator, clipPathedDecorator, clippedDecorator, complexLayeredDecorator, containedDecorator, layeredDecorator, relativeDecorator, transformedDecorator } from './index.js';
 
 export default {
     title: 'External/Tooltip',
@@ -70,8 +70,14 @@ export const Regular = (args: ArgTypes) => Template(args);
 export const layered = (args: ArgTypes) => Template(args);
 layered.decorators = [layeredDecorator];
 
+;export const complexLayered = (args: ArgTypes) => Template(args);
+complexLayered.decorators = [complexLayeredDecorator];
+
 export const clipped = (args: ArgTypes) => Template(args);
 clipped.decorators = [clippedDecorator];
+
+export const contained = (args: ArgTypes) => Template(args);
+contained.decorators = [containedDecorator];
 
 export const positionRelative = (args: ArgTypes) => Template(args);
 positionRelative.decorators = [relativeDecorator];

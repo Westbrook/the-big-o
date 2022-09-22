@@ -1,5 +1,4 @@
-const div = document.createElement('div');
-export const supportsTopLayer = 'popUp' in div;
+export const supportsTopLayer = CSS.supports('selector(:open)');
 
 export const supportsHas = CSS.supports('selector(:has())');
 

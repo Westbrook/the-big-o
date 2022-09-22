@@ -30,12 +30,9 @@ export class ClickO extends AnchoredPopupMixin(BigO) {
   }
 
   async setupOverlay() {
-    console.log('s');
     if (!supportsTopLayer) {
       document.documentElement.addEventListener('click', this.handleDocumentInteraction);
     }
-    const focusTarget = (this.querySelector('[tabindex]:not([tabindex="-1"])') as HTMLElement);
-    focusTarget?.focus();
   }
 
   async breakdownOverlay() {

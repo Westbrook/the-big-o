@@ -1,5 +1,6 @@
 import { OffsetOptions } from '@floating-ui/core';
 import {autoUpdate, computePosition, flip, offset, shift, size, Placement } from '@floating-ui/dom';
+import { topLayer } from './topLayer.js';
 export type { Placement };
 
 function roundByDPR(num: number): number {
@@ -10,12 +11,12 @@ function roundByDPR(num: number): number {
 let initialHeight: number;
 let isConstrained: boolean;
 const virtualTrigger = false;
-const placements: Record<string, Placement[]> = {
-    top: ['top', 'bottom'] as Placement[],
-    bottom: ['bottom', 'top'] as Placement[],
-    left: ['left', 'right'] as Placement[],
-    right: ['right', 'left'] as Placement[],
-}
+// const placements: Record<string, Placement[]> = {
+//     top: ['top', 'bottom'] as Placement[],
+//     bottom: ['bottom', 'top'] as Placement[],
+//     left: ['left', 'right'] as Placement[],
+//     right: ['right', 'left'] as Placement[],
+// }
 // See: https://spectrum.adobe.com/page/popover/#Container-padding
 const REQUIRED_DISTANCE_TO_EDGE = 8;
 // See: https://github.com/adobe/spectrum-web-components/issues/910
@@ -25,7 +26,7 @@ export const positionAnchoredElement = (element: HTMLElement, anchor: HTMLElemen
     const cleanup = autoUpdate(anchor, element, () => {
         computePosition(anchor, element, {
             strategy: 'fixed',
-            placement: placement,
+            placement,
             middleware: [
                 shift({ padding: REQUIRED_DISTANCE_TO_EDGE }),
                 flip({
@@ -63,12 +64,13 @@ export const positionAnchoredElement = (element: HTMLElement, anchor: HTMLElemen
                         });
                     },
                 }),
+                topLayer(),
             ],
-        }).then(({x, y, placement}) => {
+        }).then(({x, y, placement: actualPlacement}) => {
             Object.assign(element.style, {
                 transform: `translate(${roundByDPR(x)}px, ${roundByDPR(y)}px)`,
             });
-            element.setAttribute('actual-placement', placement);
+            element.setAttribute('actual-placement', actualPlacement);
         });
     });
     return () => {
